@@ -1,3 +1,38 @@
+.bg
+{
+	-fx-background-color: #191919;
+}
+
+.nodeEditTextFild
+{
+	-fx-background-color: #333;
+	-fx-background-insets:  0.0;
+    -fx-background-radius: 0.0;
+    -fx-border-insets: 0.0;
+    -fx-border-radius: 0.0;
+    -fx-text-fill: #FFF;
+	
+}
+
+.nodeEditTextFild .content
+{
+	-fx-background-color: #333;
+	-fx-background-insets:  0.0;
+    -fx-background-radius: 0.0;
+    -fx-border-insets: 0.0;
+    -fx-border-radius: 0.0;
+}
+
+.nodeEditButton
+{
+	-fx-background-color: #333;
+	-fx-background-insets:  0.0;
+    -fx-background-radius: 0.0;
+    -fx-border-insets: 0.0;
+    -fx-border-radius: 0.0;
+    -fx-text-fill: #FFF;
+}
+
 .scroll-pane > .viewport 
 {
    -fx-background-color: transparent;
@@ -55,15 +90,15 @@
 }
 
 .progress-bar > .bar {
-    -fx-background-color: linear-gradient(to bottom, derive(-fx-accent, -7%), derive(-fx-accent, 0%), derive(-fx-accent, -3%), derive(-fx-accent, -9%) );
-    -fx-background-insets: 0;
+    -fx-background-color: linear-gradient(to bottom, derive(-fx-accent, -7.0%), derive(-fx-accent, 0.0%), derive(-fx-accent, -3.0%), derive(-fx-accent, -9.0%) );
+    -fx-background-insets: 0.0;
     /*-fx-background-radius: 0.583em; *//* 7 */
-    -fx-background-radius: 0;
-    -fx-padding: 0;
+    -fx-background-radius: 0.0;
+    -fx-padding: 0.0;
 }
 
 .progress-bar .track {
     -fx-background-color:  #333;
-    -fx-background-insets:  0;
-    -fx-background-radius: 0;
+    -fx-background-insets:  0.0;
+    -fx-background-radius: 0.0;
 }

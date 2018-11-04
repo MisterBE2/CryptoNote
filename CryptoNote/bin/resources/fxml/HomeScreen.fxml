@@ -4,8 +4,6 @@
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -57,18 +55,30 @@
    <center>
       <AnchorPane prefHeight="290.0" prefWidth="465.0" style="-fx-background-color: #333333;" BorderPane.alignment="CENTER">
          <children>
+            <HBox alignment="CENTER" prefHeight="25.0" prefWidth="200.0" spacing="10.0" style="-fx-background-color: #FFF;" styleClass="noteMenuBar" stylesheets="@../css/global.css" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <children>
+                  <Button graphicTextGap="0.0" mnemonicParsing="false" onAction="#onaActionRenameNote" style="-fx-background-color: #fff; -fx-background-insets: 0; -fx-background-radius: 0; -fx-border-radius: 0;" text="Rename">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Button>
+                  <Button graphicTextGap="0.0" layoutX="81.0" layoutY="10.0" mnemonicParsing="false" onAction="#onaActionEditNote" style="-fx-background-color: #fff; -fx-background-insets: 0; -fx-background-radius: 0; -fx-border-radius: 0;" text="Edit">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Button>
+                  <Button graphicTextGap="0.0" layoutX="110.0" layoutY="10.0" mnemonicParsing="false" onAction="#onaActionDeleteNote" style="-fx-background-color: #fff; -fx-background-insets: 0; -fx-background-radius: 0; -fx-border-radius: 0;" text="Delete">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Button>
+               </children>
+            </HBox>
             <Label fx:id="labelTitle" alignment="CENTER" prefHeight="30.0" text="Title" textAlignment="CENTER" textFill="WHITE" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
                <font>
                   <Font name="Segoe UI" size="18.0" />
                </font>
             </Label>
-            <MenuBar prefHeight="25.0" prefWidth="132.0" styleClass="noteMenuBar" stylesheets="@../css/global.css" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-              <menus>
-                <Menu mnemonicParsing="false" onAction="#onaActionRenameNote" text="Rename" />
-                <Menu mnemonicParsing="false" onAction="#onaActionEditNote" text="Edit" />
-                <Menu mnemonicParsing="false" onAction="#onaActionDeleteNote" text="Delete" />
-              </menus>
-            </MenuBar>
             <ScrollPane fitToWidth="true" prefHeight="200.0" prefWidth="200.0" stylesheets="@../css/global.css" vbarPolicy="NEVER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="55.0">
                <content>
                   <Label fx:id="labelContent" text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla quis lacinia massa. Integer ut ipsum diam. Quisque eu orci erat. Sed sed felis sit amet ipsum congue cursus a vel erat. Integer vel dictum enim. Cras mattis felis viverra felis gravida, eget pellentesque quam sollicitudin. Maecenas cursus erat augue, efficitur feugiat enim congue vitae. Etiam in ipsum sed ante elementum gravida ac et mauris. Donec turpis velit, ornare vitae diam vel, tristique semper diam. Vivamus eu ex elementum nulla tempor vulputate. Maecenas ut ex in ipsum bibendum bibendum." textAlignment="JUSTIFY" textFill="WHITE" wrapText="true">

@@ -1,5 +1,4 @@
 package application;
-
 import controllers.StartScreenController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;

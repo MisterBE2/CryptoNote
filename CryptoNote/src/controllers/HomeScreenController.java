@@ -2,16 +2,24 @@ package controllers;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.Optional;
 
 import com.fazecast.jSerialComm.SerialPort;
 
 import application.Global;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import mrParser.Command;
 import mrParser.Parser;
 import serial.BlockingSerial;
@@ -52,22 +60,88 @@ public class HomeScreenController {
 	@FXML
 	void onaActionDeleteNote() {
 
+		if (labelTitle.getText().length() > 0) {
+			Alert alert = new Alert(AlertType.WARNING, "Are you sure you want to delete " + labelTitle.getText() + "?",
+					ButtonType.YES, ButtonType.NO);
+			Optional<ButtonType> result = alert.showAndWait();
+			if (result.isPresent() && result.get() == ButtonType.YES) {
+				Command c = Parser.parse(bs.sendAwaitToOpenedPort(dev, "<remove:" + labelTitle.getText() + ">", 100));
+				if (c.isValid()) {
+					if (c.getCommand().contains("err")) {
+						alert = new Alert(AlertType.WARNING, c.getProp().get(0), ButtonType.OK);
+						alert.showAndWait();
+					} else
+						System.out.println("Delete command response: " + c.getCommand());
+				}
+			}
+
+			labelTitle.setText("");
+			labelContent.setText("");
+
+			populateNoteList();
+			populateDeviceInfo();
+		}
 	}
 
 	@FXML
 	void onaActionEditNote() {
+		FXMLLoader ld = g.getResLoader("NoteEditScreen");
+		try {
+			AnchorPane ap = ld.load();
+			NoteEditScreenController nsc = ld.getController();
+			nsc.setHSC(this);
+			
+			Stage stage = new Stage();
+			Scene scene = new Scene(ap);
+			
 
+			stage.setTitle("New edit");
+			stage.setScene(scene);
+			stage.setResizable(true);
+			stage.showAndWait();
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 	}
 
 	@FXML
 	void onaActionRenameNote() {
+		if (labelTitle.getText().length() > 0) {
+			TextInputDialog dialog = new TextInputDialog("Tran");
 
+			dialog.setTitle("Rename note");
+			dialog.setHeaderText("Enter new note name:");
+			dialog.setContentText("Name:");
+
+			Optional<String> result = dialog.showAndWait();
+
+			result.ifPresent(name -> {
+				Command c = Parser.parse(
+						bs.sendAwaitToOpenedPort(dev, "<rename:" + labelTitle.getText() + ":" + name + ">", 100));
+				if (c.isValid()) {
+					if (c.getCommand().contains("err")) {
+						Alert alert = new Alert(AlertType.ERROR, c.getProp().get(0), ButtonType.OK);
+						alert.showAndWait();
+					} else
+						System.out.println("Rename command response: " + c.getCommand());
+				}
+			});
+		}
 	}
 
 	@FXML
 	public void initialize() {
 		labelTitle.setText("");
 		labelContent.setText("");
+	}
+	
+	public void showEdiitNoteScreen()
+	{
+		
 	}
 
 	public void openNote(String notePath) {
@@ -76,43 +150,20 @@ public class HomeScreenController {
 			if (notes.getCommand().contains("read")) {
 				labelTitle.setText(notePath);
 				labelContent.setText(notes.getProp().get(0));
+			} else if (notes.getCommand().contains("err")) {
+				Alert alert = new Alert(AlertType.ERROR, notes.getProp().get(0), ButtonType.OK);
+				alert.showAndWait();
 			} else
-				System.out.println("Err: Unexpected command: " + notes.getCommand() + ", while loading note " + notePath);
+				System.out
+						.println("Err: Unexpected command: " + notes.getCommand() + ", while loading note " + notePath);
 		}
 	}
 
-	public void setDevice(SerialPort dev) {
-		this.dev = dev;
-		
-		SerialConnection.setSerialPort(dev);
-		
-		dev.setBaudRate(921600);
-		dev.openPort();
-		dev.setComPortTimeouts(SerialPort.TIMEOUT_NONBLOCKING, 0, 0);
-
-
-		Command notes = Parser.parse(bs.sendAwaitToOpenedPort(dev, "<list>", 200));
-		if (notes.isValid()) {
-			if (notes.getCommand().contains("list")) {
-				VBoxTitles.getChildren().clear();
-				for (String note : notes.getProp()) {
-
-					FXMLLoader ld = g.getResLoader("TitleNode");
-					Label newB;
-					try {
-						newB = ld.load();
-
-						TitleNodeController tnc = ld.getController();
-						tnc.setName(note);
-						tnc.setHSC(this);
-
-						VBoxTitles.getChildren().add(newB);
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-			} else
-				System.out.println("Err: Unexpected command: " + notes.getCommand() + ", while loading notes");
+	public void populateDeviceInfo() {
+		if (!dev.isOpen()) {
+			dev.setBaudRate(921600);
+			dev.openPort();
+			dev.setComPortTimeouts(SerialPort.TIMEOUT_NONBLOCKING, 0, 0);
 		}
 
 		Command deviceInfo = Parser.parse(bs.sendAwaitToOpenedPort(dev, "<getInfo>", 200));
@@ -120,6 +171,9 @@ public class HomeScreenController {
 			if (deviceInfo.getCommand().contains("devInfo")) {
 				labelDevName.setText(deviceInfo.getProp().get(0));
 				labelDevID.setText(deviceInfo.getProp().get(1));
+			} else if (deviceInfo.getCommand().contains("err")) {
+				Alert alert = new Alert(AlertType.ERROR, deviceInfo.getProp().get(0), ButtonType.OK);
+				alert.showAndWait();
 			} else
 				System.out
 						.println("Err: Unexpected command: " + deviceInfo.getCommand() + ", while loading deviceInfo");
@@ -148,9 +202,56 @@ public class HomeScreenController {
 
 				progressBarMem.setProgress(progress);
 
-			} else
+			} else if (memInfo.getCommand().contains("err")) {
+				Alert alert = new Alert(AlertType.ERROR, memInfo.getProp().get(0), ButtonType.OK);
+				alert.showAndWait();
+			}else
 				System.out
 						.println("Err: Unexpected command: " + memInfo.getCommand() + ", while loading deviceMemInfo");
 		}
+	}
+
+	public void populateNoteList() {
+		if (!dev.isOpen()) {
+			dev.setBaudRate(921600);
+			dev.openPort();
+			dev.setComPortTimeouts(SerialPort.TIMEOUT_NONBLOCKING, 0, 0);
+		}
+
+		VBoxTitles.getChildren().clear();
+
+		Command notes = Parser.parse(bs.sendAwaitToOpenedPort(dev, "<list>", 200));
+		if (notes.isValid()) {
+			if (notes.getCommand().contains("list")) {
+				if(notes.getProp() != null)
+				{
+					for (String note : notes.getProp()) {
+						FXMLLoader ld = g.getResLoader("TitleNode");
+						Label newB;
+						try {
+							newB = ld.load();
+
+							TitleNodeController tnc = ld.getController();
+							tnc.setName(note);
+							tnc.setHSC(this);
+
+							VBoxTitles.getChildren().add(newB);
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			} else
+				System.out.println("Err: Unexpected command: " + notes.getCommand() + ", while loading notes");
+		}
+
+	}
+
+	public void setDevice(SerialPort dev) {
+		this.dev = dev;
+		SerialConnection.setSerialPort(dev);
+
+		populateNoteList();
+		populateDeviceInfo();
 	}
 }
