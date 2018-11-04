@@ -197,11 +197,7 @@ int mrParse(const char* comBuffer)
     {
       if (propCount == 1)
       {
-        String filename = "/";
-        filename += prop[0];
-        filename += ".txt";
-
-        File curF = SPIFFS.open(filename, "w");
+        curF = SPIFFS.open(prop[0], "w");
         if (curF)
         {
           ledSet(18, 100, 255);

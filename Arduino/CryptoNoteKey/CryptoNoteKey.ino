@@ -8,54 +8,78 @@ int bufPos = 0;
 bool readBusy = false;
 bool bufferCleared = false;
 bool debug = false;
+bool startToken = false;
+bool endToken = false;
+
 
 void setup() {
   Serial.begin(921600);
+  //Serial.begin(115200);
   ledInitialize();
   ledSet(0, 10, 0);
   SPIFFS.begin();
 
 }
 
+bool addToBuffer(char c)
+{
+  if (bufPos < devBufSize) {
+    dataBuf[bufPos] = c;
+    bufPos++;
+  }
+}
+
 void loop() {
-  ledSet(0, 10, 0);
-  if (Serial.available()) {
-    ledSet(15, 80 , 255);
-    bufPos = 0;
-    memset(dataBuf, '\0', devBufSize);
+  if (Serial.available())
+  {
+    char tmp = (char)Serial.read();
 
-    while (Serial.available()) {
-      char tmp = (char)Serial.read();
-      if (bufPos < devBufSize) {
-        dataBuf[bufPos] = tmp;
-        bufPos++;
-      }
-      else {
-        if (debug)
-          Serial.println("Buffer too small");
-        else
-          Serial.print("<endOfBuffer>");
-      }
-
-      delay(1);
+    if (bufPos == 0 && tmp == '<')
+    {
+      ledSet(15, 80 , 80);
+      memset(dataBuf, '\0', devBufSize);
+      startToken = true;
+      addToBuffer(tmp);
     }
+    else if (startToken && tmp == '>')
+    {
+      ledSet(255, 255 , 255);
+      addToBuffer(tmp);
+      endToken = true;
 
-    if (debug && !Serial.available()) {
-      for (int i = 0; i < devBufSize; i++) {
-        if (dataBuf[i] == '\0')
-          break;
+      if (bufPos > 2)
+      {
+        if (debug) {
+          for (int i = 0; i < devBufSize; i++) {
+            if (dataBuf[i] == '\0')
+              break;
 
-        Serial.print(dataBuf[i]);
+            Serial.print(dataBuf[i]);
+          }
+          Serial.print('\n');
+        }
+
+        if (mrParse(dataBuf)) {
+          ledSet(0, 255, 0); // Command parsed
+        }
+        else {
+          ledSet(255, 0, 0); // Invalid command
+        }
+
+        startToken = false;
+        endToken = false;
+        bufPos = 0;
       }
-      Serial.print('\n');
     }
-
-    // parsing a command
-    if (mrParse(dataBuf)) {
-      ledSet(0, 255, 0); // Command parsed
-    }
-    else {
-      ledSet(255, 0, 0); // Invalid command
+    else if(startToken)
+    {
+      ledSet(80, 255 , 120);
+      if (!addToBuffer(tmp))
+      {
+        startToken = false;
+        endToken = false;
+        bufPos = 0;
+      }
     }
   }
 }
