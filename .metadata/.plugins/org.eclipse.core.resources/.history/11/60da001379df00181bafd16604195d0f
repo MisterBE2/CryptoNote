@@ -1,0 +1,27 @@
+package controllers;
+
+import com.fazecast.jSerialComm.SerialPort;
+
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+
+public class DeviceNodeController {
+
+	SerialPort dev;
+	StartScreenControler scc;
+	
+    @FXML
+    private Button buttonDevice;
+
+    @FXML
+    void onActionDevice() {
+    	
+    }
+
+    public void setDevice(SerialPort dev)
+    {
+    	this.dev = dev;
+    	buttonDevice.setText(dev.getDescriptivePortName());
+    }
+    
+}

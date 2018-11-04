@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
+		<item value="false" key="isRegEx"/>
+		<item value="sendAwait" key="selection"/>
+		<item value="false" key="casesensitive"/>
+		<item value="true" key="wholeword"/>
+		<list key="findhistory">
+			<item value="sendAwait"/>
+			<item value="bar"/>
+			<item value="content"/>
+		</list>
+		<list key="replacehistory">
+			<item value="sendAwaitToOpenedPort"/>
+		</list>
+	</section>
+</section>

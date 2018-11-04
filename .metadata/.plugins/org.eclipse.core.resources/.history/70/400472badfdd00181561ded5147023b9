@@ -1,0 +1,14 @@
+.scroll-pane > .viewport {
+   -fx-background-color: transparent;
+}
+
+.scroll-pane {
+   -fx-background-color: transparent;
+}
+
+.titleNode {
+	-fx-background-color: #111111;
+	-fx-border-style: solid;
+	-fx-border-color: #2A2A2A;
+	
+}

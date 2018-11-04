@@ -1,0 +1,16 @@
+package controllers;
+
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+
+public class DeviceNodeController {
+
+    @FXML
+    private Button buttonDevice;
+
+    @FXML
+    void onActionDevice() {
+
+    }
+
+}

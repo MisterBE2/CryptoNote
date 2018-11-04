@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+<fullyQualifiedTypeName name="javafx.scene.layout.AnchorPane"/>
+<fullyQualifiedTypeName name="controllers.StartScreenController"/>
+<fullyQualifiedTypeName name="javafx.scene.Scene"/>
+<fullyQualifiedTypeName name="javafx.scene.layout.BorderPane"/>
+<fullyQualifiedTypeName name="javafx.scene.layout.VBox"/>
+<fullyQualifiedTypeName name="controllers.DeviceNodeController"/>
+<fullyQualifiedTypeName name="controllers.HomeScreenController"/>
+<fullyQualifiedTypeName name="com.fazecast.jSerialComm.SerialPortDataListener"/>
+<fullyQualifiedTypeName name="com.fazecast.jSerialComm.SerialPortEvent"/>
+<fullyQualifiedTypeName name="java.util.Arrays"/>
+<fullyQualifiedTypeName name="com.fazecast.jSerialComm.SerialPort"/>
+<fullyQualifiedTypeName name="java.util.concurrent.TimeUnit"/>
+<fullyQualifiedTypeName name="tools.TimeWatch"/>
+<fullyQualifiedTypeName name="mrParser.Command"/>
+<fullyQualifiedTypeName name="mrParser.Parser"/>
+<fullyQualifiedTypeName name="java.lang.System"/>
+<fullyQualifiedTypeName name="javafx.fxml.FXMLLoader"/>
+<fullyQualifiedTypeName name="application.Global"/>
+<fullyQualifiedTypeName name="serial.BlockingSerial"/>
+<fullyQualifiedTypeName name="java.lang.Integer"/>
+<fullyQualifiedTypeName name="javafx.scene.control.ProgressBar"/>
+<fullyQualifiedTypeName name="java.text.DecimalFormat"/>
+<fullyQualifiedTypeName name="serial.SerialConnection"/>
+</qualifiedTypeNameHistroy>

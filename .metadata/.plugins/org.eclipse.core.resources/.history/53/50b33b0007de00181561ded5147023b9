@@ -1,0 +1,16 @@
+package controller;
+
+import javafx.fxml.FXML;
+import javafx.scene.control.Label;
+
+public class TitleNodeController {
+
+    @FXML
+    private Label labelTitle;
+
+    @FXML
+    void onMouseClick() {
+
+    }
+
+}
