@@ -20,6 +20,7 @@ public class Main extends Application {
 
 			StartScreenController ssc = loader.getController();
 			Scene scene = new Scene(root);
+			scene.getStylesheets().add("/resources/css/global.css");
 
 			ssc.setPrimaryStage(primaryStage);
 			ssc.setScene(scene);

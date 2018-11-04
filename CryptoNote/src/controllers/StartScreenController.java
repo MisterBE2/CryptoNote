@@ -62,7 +62,10 @@ public class StartScreenController {
 			HomeScreenController hsc = ld.getController();
 			hsc.setDevice(sp);
 			
-			primaryStage.setScene(new Scene(home));
+			Scene s = new Scene(home);
+			s.getStylesheets().add("/resources/css/global.css");
+			
+			primaryStage.setScene(s);
 			primaryStage.sizeToScene();
 			primaryStage.setMaximized(true);
 			primaryStage.setResizable(true);
