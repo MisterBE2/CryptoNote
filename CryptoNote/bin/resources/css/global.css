@@ -33,6 +33,11 @@
     -fx-text-fill: #FFF;
 }
 
+.nodeEditButton:hover
+{
+	-fx-background-color: #2A2A2A;
+}
+
 .scroll-pane > .viewport 
 {
    -fx-background-color: transparent;

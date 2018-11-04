@@ -31,6 +31,10 @@ public class HomeScreenController {
 	private BlockingSerial bs = new BlockingSerial();
 	private Global g = new Global();
 
+	private Stage stage; // Stage for edit note scene
+
+	private int devBufferSize = 0;
+
 	@FXML
 	private VBox VBoxTitles;
 
@@ -50,11 +54,14 @@ public class HomeScreenController {
 	private Label labelDevMemory;
 
 	@FXML
+	private Label labelDevIBuffer;
+
+	@FXML
 	private ProgressBar progressBarMem;
 
 	@FXML
 	void onActionAddNote() {
-
+		showEditor(true);
 	}
 
 	@FXML
@@ -83,35 +90,54 @@ public class HomeScreenController {
 		}
 	}
 
+	public void showEditor(boolean newNote) {
+		if (stage == null) {
+			FXMLLoader ld = g.getResLoader("NoteEditScreen");
+			try {
+				AnchorPane ap = ld.load();
+				NoteEditScreenController nsc = ld.getController();
+				nsc.setHSC(this);
+				nsc.setDevBufferSize(devBufferSize);
+				nsc.isNewNote(newNote);
+				nsc.setSerialPort(dev);
+
+				if (!newNote) {
+					nsc.setTitle(labelTitle.getText());
+					nsc.setContent(labelContent.getText());
+				}
+
+				stage = new Stage();
+				nsc.setStage(stage);
+
+				Scene scene = new Scene(ap);
+
+				stage.setTitle("Note editor");
+				stage.setScene(scene);
+				stage.setResizable(true);
+				stage.showAndWait();
+
+				if (!newNote)
+					if (labelTitle.getText().length() > 0)
+						openNote(labelTitle.getText());
+
+				stage = null;
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
 	@FXML
 	void onaActionEditNote() {
-		FXMLLoader ld = g.getResLoader("NoteEditScreen");
-		try {
-			AnchorPane ap = ld.load();
-			NoteEditScreenController nsc = ld.getController();
-			nsc.setHSC(this);
-			
-			Stage stage = new Stage();
-			Scene scene = new Scene(ap);
-			
-
-			stage.setTitle("New edit");
-			stage.setScene(scene);
-			stage.setResizable(true);
-			stage.showAndWait();
-			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		
+		if (labelTitle.getText().length() > 0)
+			showEditor(false);
 	}
 
 	@FXML
 	void onaActionRenameNote() {
 		if (labelTitle.getText().length() > 0) {
-			TextInputDialog dialog = new TextInputDialog("Tran");
+			TextInputDialog dialog = new TextInputDialog(labelTitle.getText());
 
 			dialog.setTitle("Rename note");
 			dialog.setHeaderText("Enter new note name:");
@@ -138,18 +164,17 @@ public class HomeScreenController {
 		labelTitle.setText("");
 		labelContent.setText("");
 	}
-	
-	public void showEdiitNoteScreen()
-	{
-		
-	}
 
 	public void openNote(String notePath) {
 		Command notes = Parser.parse(bs.sendAwaitToOpenedPort(dev, "<read:" + notePath + ">", 10000));
 		if (notes.isValid()) {
 			if (notes.getCommand().contains("read")) {
 				labelTitle.setText(notePath);
-				labelContent.setText(notes.getProp().get(0));
+
+				if (notes.getProp() != null)
+					labelContent.setText(notes.getProp().get(0));
+				else
+					labelContent.setText("");
 			} else if (notes.getCommand().contains("err")) {
 				Alert alert = new Alert(AlertType.ERROR, notes.getProp().get(0), ButtonType.OK);
 				alert.showAndWait();
@@ -171,6 +196,10 @@ public class HomeScreenController {
 			if (deviceInfo.getCommand().contains("devInfo")) {
 				labelDevName.setText(deviceInfo.getProp().get(0));
 				labelDevID.setText(deviceInfo.getProp().get(1));
+
+				devBufferSize = Integer.parseInt(deviceInfo.getProp().get(2));
+				labelDevIBuffer.setText(deviceInfo.getProp().get(2) + " chars");
+
 			} else if (deviceInfo.getCommand().contains("err")) {
 				Alert alert = new Alert(AlertType.ERROR, deviceInfo.getProp().get(0), ButtonType.OK);
 				alert.showAndWait();
@@ -192,9 +221,9 @@ public class HomeScreenController {
 
 				String out = "";
 				out += df.format(a);
-				out += "b / ";
+				out += "Mb / ";
 				out += df.format(b);
-				out += "b";
+				out += "Mb";
 
 				labelDevMemory.setText(out);
 
@@ -205,7 +234,7 @@ public class HomeScreenController {
 			} else if (memInfo.getCommand().contains("err")) {
 				Alert alert = new Alert(AlertType.ERROR, memInfo.getProp().get(0), ButtonType.OK);
 				alert.showAndWait();
-			}else
+			} else
 				System.out
 						.println("Err: Unexpected command: " + memInfo.getCommand() + ", while loading deviceMemInfo");
 		}
@@ -223,8 +252,7 @@ public class HomeScreenController {
 		Command notes = Parser.parse(bs.sendAwaitToOpenedPort(dev, "<list>", 200));
 		if (notes.isValid()) {
 			if (notes.getCommand().contains("list")) {
-				if(notes.getProp() != null)
-				{
+				if (notes.getProp() != null) {
 					for (String note : notes.getProp()) {
 						FXMLLoader ld = g.getResLoader("TitleNode");
 						Label newB;

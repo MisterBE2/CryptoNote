@@ -130,6 +130,19 @@
                         <Insets bottom="5.0" />
                      </padding>
                   </Label>
+                  <Label layoutX="20.0" layoutY="57.0" text="Buffer size:" textFill="WHITE">
+                     <font>
+                        <Font name="Segoe UI" size="12.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="labelDevIBuffer" layoutX="20.0" layoutY="72.0" text="Undefined" textFill="WHITE" wrapText="true">
+                     <font>
+                        <Font name="Segoe UI Light" size="12.0" />
+                     </font>
+                     <padding>
+                        <Insets bottom="5.0" />
+                     </padding>
+                  </Label>
                   <Label text="Memmory:" textFill="WHITE">
                      <font>
                         <Font name="Segoe UI" size="12.0" />
