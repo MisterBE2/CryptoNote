@@ -89,6 +89,33 @@ public class HomeScreenController {
 			populateDeviceInfo();
 		}
 	}
+	
+	public ProgressBoxController getProgressBox(String title)
+	{
+		ProgressBoxController pbc = null;
+		FXMLLoader ld = g.getResLoader("ProgressBox");
+		try {
+			AnchorPane ap = ld.load();
+			pbc = ld.getController();
+			
+			Stage stagePB = new Stage();
+			pbc.setData("");
+			pbc.setProgress(0);
+			pbc.setStage(stagePB);
+
+			Scene scene = new Scene(ap);
+			scene.getStylesheets().add("/resources/css/global.css");
+
+			stagePB.setTitle(title);
+			stagePB.setScene(scene);
+			stagePB.setResizable(false);
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return pbc;
+	}
 
 	public void showEditor(boolean newNote) {
 		if (stage == null) {
@@ -110,6 +137,7 @@ public class HomeScreenController {
 				nsc.setStage(stage);
 
 				Scene scene = new Scene(ap);
+				scene.getStylesheets().add("/resources/css/global.css");
 
 				stage.setTitle("Note editor");
 				stage.setScene(scene);
@@ -185,12 +213,6 @@ public class HomeScreenController {
 	}
 
 	public void populateDeviceInfo() {
-		if (!dev.isOpen()) {
-			dev.setBaudRate(921600);
-			dev.openPort();
-			dev.setComPortTimeouts(SerialPort.TIMEOUT_NONBLOCKING, 0, 0);
-		}
-
 		Command deviceInfo = Parser.parse(bs.sendAwaitToOpenedPort(dev, "<getInfo>", 200));
 		if (deviceInfo.isValid()) {
 			if (deviceInfo.getCommand().contains("devInfo")) {
@@ -221,9 +243,9 @@ public class HomeScreenController {
 
 				String out = "";
 				out += df.format(a);
-				out += "Mb / ";
+				out += "Kb / ";
 				out += df.format(b);
-				out += "Mb";
+				out += "Kb";
 
 				labelDevMemory.setText(out);
 
@@ -241,12 +263,6 @@ public class HomeScreenController {
 	}
 
 	public void populateNoteList() {
-		if (!dev.isOpen()) {
-			dev.setBaudRate(921600);
-			dev.openPort();
-			dev.setComPortTimeouts(SerialPort.TIMEOUT_NONBLOCKING, 0, 0);
-		}
-
 		VBoxTitles.getChildren().clear();
 
 		Command notes = Parser.parse(bs.sendAwaitToOpenedPort(dev, "<list>", 200));

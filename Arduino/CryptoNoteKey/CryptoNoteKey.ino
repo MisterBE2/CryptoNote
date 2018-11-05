@@ -13,8 +13,8 @@ bool endToken = false;
 
 
 void setup() {
-  Serial.begin(921600);
-  //Serial.begin(115200);
+  //Serial.begin(921600);
+  Serial.begin(115200);
   ledInitialize();
   ledSet(0, 10, 0);
   SPIFFS.begin();
@@ -82,4 +82,5 @@ void loop() {
       }
     }
   }
+  delay(1);
 }

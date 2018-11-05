@@ -75,7 +75,7 @@ int mrParse(const char* comBuffer)
       }
       else
       {
-        Serial.print("<err:Too few arguments");
+        Serial.print("<err:Too few arguments>");
         if (debug)
           Serial.println("");
       }
@@ -137,14 +137,14 @@ int mrParse(const char* comBuffer)
         }
         else
         {
-          Serial.print("<err:Coudn't open file > ");
+          Serial.print("<err:Coudn't open file> ");
           if (debug)
             Serial.println("");
         }
       }
       else
       {
-        Serial.print("<err: Too few arguments");
+        Serial.print("<err: Too few arguments>");
         if (debug)
           Serial.println("");
       }
@@ -172,6 +172,7 @@ int mrParse(const char* comBuffer)
           while (f.available())
           {
             Serial.print((char)f.read());
+            delayMicroseconds(100);
           }
           Serial.print(">");
           if (debug)
@@ -239,6 +240,7 @@ int mrParse(const char* comBuffer)
           for (int i = 0; i < strlen(prop[0]); i++)
           {
             curF.write((uint8_t)prop[0][i]);
+            delay(5);
           }
 
           Serial.print("<ok>");
@@ -254,7 +256,7 @@ int mrParse(const char* comBuffer)
       }
       else
       {
-        Serial.print(" < err: Too few arguments");
+        Serial.print(" <ok>");
         if (debug)
           Serial.println("");
       }
