@@ -58,7 +58,16 @@ public class HomeScreenController {
 
 	@FXML
 	private ProgressBar progressBarMem;
-
+	
+    @FXML
+    void onActionRefresh() {
+    	populateNoteList();
+		populateDeviceInfo();
+		
+		labelTitle.setText("");
+		labelContent.setText("");
+    }
+	
 	@FXML
 	void onActionAddNote() {
 		showEditor(true);
@@ -181,7 +190,15 @@ public class HomeScreenController {
 						Alert alert = new Alert(AlertType.ERROR, c.getProp().get(0), ButtonType.OK);
 						alert.showAndWait();
 					} else
+					{
+						labelTitle.setText("");
+						labelContent.setText("");
+						
+				    	populateNoteList();
+						populateDeviceInfo();
+						
 						System.out.println("Rename command response: " + c.getCommand());
+					}			
 				}
 			});
 		}

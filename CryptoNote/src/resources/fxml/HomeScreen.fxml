@@ -27,19 +27,27 @@
    <left>
       <AnchorPane prefHeight="135.0" prefWidth="300.0" style="-fx-background-color: #191919;" BorderPane.alignment="CENTER">
          <children>
-            <Label alignment="CENTER" prefHeight="31.0" style="-fx-background-color: #FFF;" text="Notes" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <Label alignment="CENTER" prefHeight="35.0" style="-fx-background-color: #FFF;" text="Notes" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <font>
                   <Font size="18.0" />
                </font>
             </Label>
-            <VBox fx:id="VBoxTitles" prefHeight="200.0" prefWidth="300.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="31.0">
+            <VBox fx:id="VBoxTitles" prefHeight="200.0" prefWidth="300.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="35.0">
                <padding>
                   <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
                </padding>
             </VBox>
             <HBox alignment="CENTER" layoutY="239.0" prefHeight="50.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                <children>
-                  <Button graphicTextGap="0.0" mnemonicParsing="false" onAction="#onActionAddNote" prefHeight="50.0" prefWidth="300.0" styleClass="buttonAddNote" stylesheets="@../css/global.css" text="Add Note" textFill="WHITE">
+                  <Button graphicTextGap="0.0" mnemonicParsing="false" onAction="#onActionAddNote" prefHeight="50.0" prefWidth="150.0" styleClass="buttonAddNote" stylesheets="@../css/global.css" text="Add Note" textFill="WHITE">
+                     <font>
+                        <Font name="Segoe UI Light" size="24.0" />
+                     </font>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Button>
+                  <Button graphicTextGap="0.0" mnemonicParsing="false" onAction="#onActionRefresh" prefHeight="50.0" prefWidth="150.0" styleClass="buttonAddNote" stylesheets="@../css/global.css" text="Refresh" textFill="WHITE">
                      <font>
                         <Font name="Segoe UI Light" size="24.0" />
                      </font>
@@ -57,29 +65,38 @@
          <children>
             <HBox alignment="CENTER" prefHeight="31.0" prefWidth="200.0" spacing="10.0" style="-fx-background-color: #FFF;" styleClass="noteMenuBar" stylesheets="@../css/global.css" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
-                  <Button graphicTextGap="0.0" mnemonicParsing="false" onAction="#onaActionRenameNote" style="-fx-background-color: #fff; -fx-background-insets: 0; -fx-background-radius: 0; -fx-border-radius: 0;" text="Rename">
+                  <Button graphicTextGap="0.0" maxHeight="31.0" mnemonicParsing="false" onAction="#onaActionRenameNote" prefHeight="31.0" style="-fx-background-color: #fff; -fx-background-insets: 0; -fx-background-radius: 0; -fx-border-radius: 0; -fx-border-insets: 0;" text="Rename">
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor>
+                     <font>
+                        <Font name="Segoe UI" size="18.0" />
+                     </font>
                   </Button>
-                  <Button graphicTextGap="0.0" layoutX="81.0" layoutY="10.0" mnemonicParsing="false" onAction="#onaActionEditNote" style="-fx-background-color: #fff; -fx-background-insets: 0; -fx-background-radius: 0; -fx-border-radius: 0;" text="Edit">
+                  <Button graphicTextGap="0.0" layoutX="81.0" layoutY="10.0" maxHeight="31.0" mnemonicParsing="false" onAction="#onaActionEditNote" prefHeight="31.0" style="-fx-background-color: #fff; -fx-background-insets: 0; -fx-background-radius: 0; -fx-border-radius: 0; -fx-border-insets: 0;" text="Edit">
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor>
+                     <font>
+                        <Font name="Segoe UI" size="18.0" />
+                     </font>
                   </Button>
-                  <Button graphicTextGap="0.0" layoutX="110.0" layoutY="10.0" mnemonicParsing="false" onAction="#onaActionDeleteNote" style="-fx-background-color: #fff; -fx-background-insets: 0; -fx-background-radius: 0; -fx-border-radius: 0;" text="Delete">
+                  <Button graphicTextGap="0.0" layoutX="110.0" layoutY="10.0" maxHeight="31.0" mnemonicParsing="false" onAction="#onaActionDeleteNote" prefHeight="31.0" style="-fx-background-color: #fff; -fx-background-insets: 0; -fx-background-radius: 0; -fx-border-radius: 0; -fx-border-insets: 0;" text="Delete">
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor>
+                     <font>
+                        <Font name="Segoe UI" size="18.0" />
+                     </font>
                   </Button>
                </children>
             </HBox>
-            <Label fx:id="labelTitle" alignment="CENTER" prefHeight="30.0" text="Title" textAlignment="CENTER" textFill="WHITE" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="31.0">
+            <Label fx:id="labelTitle" alignment="CENTER" prefHeight="30.0" text="Title" textAlignment="CENTER" textFill="WHITE" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="35.0">
                <font>
                   <Font name="Segoe UI" size="24.0" />
                </font>
             </Label>
-            <ScrollPane fitToWidth="true" prefHeight="200.0" prefWidth="200.0" stylesheets="@../css/global.css" vbarPolicy="NEVER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="72.0">
+            <ScrollPane fitToWidth="true" prefHeight="200.0" prefWidth="200.0" stylesheets="@../css/global.css" vbarPolicy="NEVER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="65.0">
                <content>
                   <Label fx:id="labelContent" text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla quis lacinia massa. Integer ut ipsum diam. Quisque eu orci erat. Sed sed felis sit amet ipsum congue cursus a vel erat. Integer vel dictum enim. Cras mattis felis viverra felis gravida, eget pellentesque quam sollicitudin. Maecenas cursus erat augue, efficitur feugiat enim congue vitae. Etiam in ipsum sed ante elementum gravida ac et mauris. Donec turpis velit, ornare vitae diam vel, tristique semper diam. Vivamus eu ex elementum nulla tempor vulputate. Maecenas ut ex in ipsum bibendum bibendum." textAlignment="JUSTIFY" textFill="WHITE" wrapText="true">
                      <font>
@@ -97,7 +114,7 @@
    <right>
       <AnchorPane prefHeight="320.0" prefWidth="300.0" style="-fx-background-color: #191919;" BorderPane.alignment="CENTER">
          <children>
-            <Label alignment="CENTER" prefHeight="31.0" style="-fx-background-color: #FFF;" text="Device info" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <Label alignment="CENTER" prefHeight="35.0" style="-fx-background-color: #FFF;" text="Device info" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <font>
                   <Font size="18.0" />
                </font>

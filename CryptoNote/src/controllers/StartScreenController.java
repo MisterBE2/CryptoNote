@@ -92,7 +92,7 @@ public class StartScreenController {
 
 			for (SerialPort serialPort : ports) {
 				System.out.println(serialPort.getDescriptivePortName());
-				String data = bs.sendAwait(serialPort, "<getInfo>", 100);
+				String data = bs.sendAwait(serialPort, "<getInfo>", 500);
 				// System.out.println("Recived: " + data);
 				Command c = Parser.parse(data);
 

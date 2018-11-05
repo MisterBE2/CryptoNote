@@ -35,6 +35,15 @@ public class NoteEditScreenController {
 	void onActionCancel() {
 		thisStage.close();
 	}
+	
+	@FXML
+	public void initialize()
+	{
+		if(!newNode)
+		{
+			textFieldTitle.setEditable(false);
+		}
+	}
 
 	@FXML
 	void onActionSave() {
@@ -46,9 +55,9 @@ public class NoteEditScreenController {
 			
 			String note = textFieldTitle.getText();
 			String content = textFieldContent.getText();
-			content = content.replace(":", "-");
-			content = content.replace("<", "-");
-			content = content.replace(">", "-");
+			content = content.replace(":", ";");
+			content = content.replace("<", "{");
+			content = content.replace(">", "}");
 
 			if (note.contains("/") && note.contains(".txt") && note.length() > 5) {
 				Command c = Parser.parse(bs.sendAwaitToOpenedPort(dev, "<open:" + note + ":w>", 100));
@@ -87,59 +96,9 @@ public class NoteEditScreenController {
 					curRetry = 0;
 				}  
 
-//				c = Parser.parse(bs.sendAwaitToOpenedPort(dev, "<open:" + note + ":a>", 100));
-//
-//				System.out.println("Open file response: " + c.getCommand());
-//
-//				if (c.isValid())
-//					if (c.getCommand().contains("ok")) {
-//
-//						char tempBuff[] = content.toCharArray();
-//
-//						for (int i = 0; i < content.length(); i++) {
-//							c = Parser.parse(bs.sendAwaitToOpenedPort(dev, "<append:" + tempBuff[i] + ">", 1000));
-//
-//							thisStage.setTitle("Saving: " + (i/content.length()) + " %");
-//							
-//							while (!c.is("ok") && curRetry <= maxRetry) {
-//								try {
-//									Thread.sleep(500);
-//								} catch (Exception e) {
-//									// TODO: handle exception
-//								}
-//								System.out.println("Append error, retrying");
-//								c = Parser.parse(bs.sendAwaitToOpenedPort(dev, "<append:" + tempBuff[i] + ">", 1000));
-//								curRetry++;
-//							}
-//
-//							if (curRetry >= maxRetry)
-//								break;
-//
-//							curRetry = 0;
-//						}
-//					}
-
 				if (curRetry >= maxRetry)
 					System.out.println(" ####### Error while saving message! #######");
-
-//						String[] buf = textFieldContent.getText().split("(?<=\\G.{" + bufMaxSize + "})");
-//						for (String string : buf) {
-//							String out = "<append:" + string + ">";
-//							c = Parser.parse(bs.sendAwaitToOpenedPort(dev, out, 2000));
-//							if (c.isValid()) {
-//								if (c.getCommand().contains("err")) {
-//									Alert alert = new Alert(AlertType.WARNING, c.getProp().get(0), ButtonType.OK);
-//									alert.showAndWait();
-//								} else
-//									System.out.println("Append command response: " + c.getCommand());
-//							}
-//							
-//							try {
-//								Thread.sleep(200);
-//							} catch (Exception e) {
-//								// TODO: handle exception
-//							}
-
+				
 				c = Parser.parse(bs.sendAwaitToOpenedPort(dev, "<close>", 100));
 				if (c.isValid()) {
 					if (c.getCommand().contains("err")) {
