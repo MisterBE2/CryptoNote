@@ -2,6 +2,7 @@
 .metadata/
 ConsoleSerial/bin/
 CryptoNote/bin/
+.recommenders/
 
 # CodeBlocks files #
 *.cbp
