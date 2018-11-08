@@ -15,7 +15,7 @@ public class DeviceNodeController {
 
     @FXML
     void onActionDevice() {
-    	scc.showHomeScreen(dev);
+    	scc.showHomeScreen(dev, buttonDevice.getText());
     }
 
     public void setDevice(SerialPort dev)

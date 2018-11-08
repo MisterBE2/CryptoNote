@@ -5,6 +5,7 @@ import java.util.Base64;
 
 import com.fazecast.jSerialComm.SerialPort;
 
+import application.Global;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -26,6 +27,7 @@ public class NoteEditScreenController {
 	private int devBufferSize = 0;
 	private boolean newNode = true;
 	private SerialPort dev;
+	private Global g = new Global();
 
 	@FXML
 	private TextField textFieldTitle;
@@ -59,7 +61,7 @@ public class NoteEditScreenController {
 
 		if (bufMaxSize > 0) {
 			
-			String note = textFieldTitle.getText();
+			String note = g.encodeNoteName(textFieldTitle.getText());
 			String content = textFieldContent.getText();
 			content = content.replace(":", ";");
 			content = content.replace("<", "{");
@@ -71,8 +73,8 @@ public class NoteEditScreenController {
 //				// TODO: handle exception
 //			}
 //					
-
-			if (note.contains("/") && note.contains(".txt") && note.length() > 5) {
+			
+			if (note.length() > 5) {
 				Command c = Parser.parse(bs.sendAwaitToOpenedPort(dev, "<open:" + note + ":w>", 100));
 				c = Parser.parse(bs.sendAwaitToOpenedPort(dev, "<append>", 100));
 				c = Parser.parse(bs.sendAwaitToOpenedPort(dev, "<close>", 100));
@@ -88,50 +90,50 @@ public class NoteEditScreenController {
 				byte[] bytesEncoded = Base64.getEncoder().encode(content.getBytes());
 				content = new String(bytesEncoded);
 				
-				for (char ot : content.toCharArray()) {
-					 c = Parser.parse(bs.sendAwaitToOpenedPort(dev, "<a:" + ot + ">", 200));
-
-						while (!c.is("ok") && curRetry <= maxRetry) {
-							try {
-								Thread.sleep(100);
-							} catch (Exception e) {
-								// TODO: handle exception
-							}
-							System.out.println("Append error, retrying");
-							c = Parser.parse(bs.sendAwaitToOpenedPort(dev, "<a:" + ot + ">", 200));
-							curRetry++;
-						}
-
-						if (curRetry >= maxRetry)
-							break;
-
-						curRetry = 0;
-				}
-				
-				
-//				int chunk = bufMaxSize; // chunk size to divide
-//				for(int i=0;i<content.length();i+=chunk){
-//					char tempBuff[] = Arrays.copyOfRange(content.toCharArray(), i, Math.min(content.length(),i+chunk));
-//					String out = new String(tempBuff);
-//				    
-//				    c = Parser.parse(bs.sendAwaitToOpenedPort(dev, "<append:" + out + ">", devBufferSize*5));
+//				for (char ot : content.toCharArray()) {
+//					 c = Parser.parse(bs.sendAwaitToOpenedPort(dev, "<a:" + ot + ">", 200));
 //
-//					while (!c.is("ok") && curRetry <= maxRetry) {
-//						try {
-//							Thread.sleep(500);
-//						} catch (Exception e) {
-//							// TODO: handle exception
+//						while (!c.is("ok") && curRetry <= maxRetry) {
+//							try {
+//								Thread.sleep(100);
+//							} catch (Exception e) {
+//								// TODO: handle exception
+//							}
+//							System.out.println("Append error, retrying");
+//							c = Parser.parse(bs.sendAwaitToOpenedPort(dev, "<a:" + ot + ">", 200));
+//							curRetry++;
 //						}
-//						System.out.println("Append error, retrying");
-//						c = Parser.parse(bs.sendAwaitToOpenedPort(dev, "<append:" + out + ">", devBufferSize*5));
-//						curRetry++;
-//					}
 //
-//					if (curRetry >= maxRetry)
-//						break;
+//						if (curRetry >= maxRetry)
+//							break;
 //
-//					curRetry = 0;
-//				}  
+//						curRetry = 0;
+//				}
+				
+				
+				int chunk = 512; // chunk size to divide
+				for(int i=0;i<content.length();i+=chunk){
+					char tempBuff[] = Arrays.copyOfRange(content.toCharArray(), i, Math.min(content.length(),i+chunk));
+					String out = new String(tempBuff);
+				    
+				    c = Parser.parse(bs.sendAwaitToOpenedPort(dev, "<a:" + out + ">", devBufferSize*5));
+
+					while (!c.is("ok") && curRetry <= maxRetry) {
+						try {
+							Thread.sleep(500);
+						} catch (Exception e) {
+							// TODO: handle exception
+						}
+						System.out.println("Append error, retrying");
+						c = Parser.parse(bs.sendAwaitToOpenedPort(dev, "<a:" + out + ">", devBufferSize*5));
+						curRetry++;
+					}
+
+					if (curRetry >= maxRetry)
+						break;
+
+					curRetry = 0;
+				}  
 
 				if (curRetry >= maxRetry)
 					System.out.println(" ####### Error while saving message! #######");
@@ -173,8 +175,8 @@ public class NoteEditScreenController {
 		this.hsc = hsc;
 	}
 
-	public void setTitle(String title) {
-		textFieldTitle.setText(title);
+	public void setTitle(String title) {	
+		textFieldTitle.setText(g.getDescriptiveNoteName(title));
 	}
 
 	public void setContent(String content) {

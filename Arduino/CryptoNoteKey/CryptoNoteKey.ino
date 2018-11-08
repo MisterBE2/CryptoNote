@@ -10,7 +10,7 @@ bool bufferCleared = false;
 bool debug = false;
 bool startToken = false;
 bool endToken = false;
-
+bool lock = true;
 
 void setup() {
   //Serial.begin(921600);
@@ -30,6 +30,9 @@ bool addToBuffer(char c)
 }
 
 void loop() {
+  if(lock)
+    ledSet(120, 0 , 200);
+  
   if (Serial.available())
   {
     char tmp = (char)Serial.read();

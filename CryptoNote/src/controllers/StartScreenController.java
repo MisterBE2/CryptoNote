@@ -12,7 +12,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -26,6 +28,7 @@ public class StartScreenController {
 	private Scene scene;
 	private Global g = new Global();
 	private String startMessage;
+	BlockingSerial bs = new BlockingSerial();
 
 	@FXML
 	private VBox VBoxDevices;
@@ -54,25 +57,31 @@ public class StartScreenController {
 		this.scene = scene;
 	}
 
-	public void showHomeScreen(SerialPort sp) {
-		FXMLLoader ld = g.getResLoader("HomeScreen");
+	public void showHomeScreen(SerialPort sp, String devName) {
+		
+		if(g.unlock(devName, sp))
+		{
+			FXMLLoader ld = g.getResLoader("HomeScreen");
 
-		try {
-			BorderPane home = ld.load();
-			HomeScreenController hsc = ld.getController();
-			hsc.setDevice(sp);
+			try {
+				BorderPane home = ld.load();
+				HomeScreenController hsc = ld.getController();
+				hsc.setDevice(sp);
 
-			Scene s = new Scene(home);
-			s.getStylesheets().add("/resources/css/global.css");
-
-			primaryStage.setScene(s);
-			primaryStage.sizeToScene();
-			primaryStage.setMaximized(true);
-			primaryStage.setResizable(true);
-			primaryStage.show();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+				Scene s = new Scene(home);
+				s.getStylesheets().add("/resources/css/global.css");
+				
+				
+				primaryStage.getIcons().add(new Image(this.getClass().getResourceAsStream("/resources/img/icon.png")));
+				primaryStage.setScene(s);
+				primaryStage.sizeToScene();
+				primaryStage.setMaximized(true);
+				primaryStage.setResizable(true);
+				primaryStage.show();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}		
 	}
 
 	private void lookForDevices() {

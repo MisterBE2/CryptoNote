@@ -54,6 +54,8 @@ int mrParse(const char* comBuffer)
       data += devID;
       data += ':';
       data += devBufSize;
+      data += ':';
+      data += lock;
       data += '>';
 
       Serial.print(data);
@@ -63,6 +65,14 @@ int mrParse(const char* comBuffer)
     }
     else if (!strcmp("setDebug", com))
     {
+      if (lock)
+      {
+        Serial.print("<err:Device is locked!>");
+        if (debug)
+          Serial.println("");
+        return 0;
+      }
+
       if (propCount == 1)
       {
         if (!strcmp("true", prop[0]) || !strcmp("1", prop[0]))
@@ -82,6 +92,14 @@ int mrParse(const char* comBuffer)
     }
     else if (!strcmp("format", com))
     {
+      if (lock)
+      {
+        Serial.print("<err:Device is locked!>");
+        if (debug)
+          Serial.println("");
+        return 0;
+      }
+
       if (debug)
         Serial.println("<Formating memory>");
       SPIFFS.format();
@@ -91,6 +109,14 @@ int mrParse(const char* comBuffer)
     }
     else if (!strcmp("list", com))
     {
+      if (lock)
+      {
+        Serial.print("<err:Device is locked!>");
+        if (debug)
+          Serial.println("");
+        return 0;
+      }
+
       String str = "<list";
       Dir dir = SPIFFS.openDir("/");
       while (dir.next())
@@ -108,6 +134,14 @@ int mrParse(const char* comBuffer)
     }
     else if (!strcmp("open", com))
     {
+      if (lock)
+      {
+        Serial.print("<err:Device is locked!>");
+        if (debug)
+          Serial.println("");
+        return 0;
+      }
+
       if (propCount == 2)
       {
         if (!strcmp("r", prop[1]))
@@ -162,6 +196,14 @@ int mrParse(const char* comBuffer)
     }
     else if (!strcmp("read", com))
     {
+      if (lock)
+      {
+        Serial.print("<err:Device is locked!>");
+        if (debug)
+          Serial.println("");
+        return 0;
+      }
+
       if (propCount == 1)
       {
         File f = SPIFFS.open(prop[0], "r");
@@ -170,13 +212,13 @@ int mrParse(const char* comBuffer)
           ledSet(0, 0, 255);
           Serial.print("<read:");
 
-          Serial.print(f.readStringUntil('\0'));
-          
-//          while (f.available())
-//          {
-//            Serial.print((char)f.read());
-//            delayMicroseconds(100);
-//          }
+          //Serial.print(f.readStringUntil('\0'));
+
+          while (f.available())
+          {
+            Serial.print((char)f.read());
+            delayMicroseconds(100);
+          }
           Serial.print(">");
           if (debug)
             Serial.println("");
@@ -199,6 +241,15 @@ int mrParse(const char* comBuffer)
     }
     else if (!strcmp("newFile", com))
     {
+      if (lock)
+      {
+        Serial.print("<err:Device is locked!>");
+        if (debug)
+          Serial.println("");
+        return 0;
+      }
+
+
       if (propCount == 1)
       {
         curF = SPIFFS.open(prop[0], "w");
@@ -225,6 +276,15 @@ int mrParse(const char* comBuffer)
     }
     else if (!strcmp("a", com))
     {
+      if (lock)
+      {
+        Serial.print("<err:Device is locked!>");
+        if (debug)
+          Serial.println("");
+        return 0;
+      }
+
+
       if (propCount == 1)
       {
         ledSet(25, 180, 255);
@@ -265,6 +325,15 @@ int mrParse(const char* comBuffer)
     }
     else if (!strcmp("getMemInfo", com))
     {
+      if (lock)
+      {
+        Serial.print("<err:Device is locked!>");
+        if (debug)
+          Serial.println("");
+        return 0;
+      }
+
+
       FSInfo nfo;
       SPIFFS.info(nfo);
 
@@ -288,6 +357,15 @@ int mrParse(const char* comBuffer)
     }
     else if (!strcmp("rename", com))
     {
+      if (lock)
+      {
+        Serial.print("<err:Device is locked!>");
+        if (debug)
+          Serial.println("");
+        return 0;
+      }
+
+
       if (propCount == 2)
       {
         if (SPIFFS.rename(prop[0], prop[1]))
@@ -312,6 +390,14 @@ int mrParse(const char* comBuffer)
     }
     else if (!strcmp("remove", com))
     {
+      if (lock)
+      {
+        Serial.print("<err:Device is locked!>");
+        if (debug)
+          Serial.println("");
+        return 0;
+      }
+
       if (propCount = 1)
       {
         if (SPIFFS.remove(prop[0]))
@@ -334,86 +420,33 @@ int mrParse(const char* comBuffer)
           Serial.println("");
       }
     }
-    else if (!strcmp("setConfig", com))
+    else if (!strcmp("unlock", com))
     {
-      if (propCount == 3)
+      if (propCount == 1)
       {
-        File cfg;
-
-        if (SPIFFS.exists("/_cfg.txt"))
+        if (!strcmp(pass, prop[0]))
         {
-          cfg = SPIFFS.open("/_cfg.txt", "r");
-
-          String login = cfg.readStringUntil('\n');
-          String pass = cfg.readStringUntil('\n');
-          String oldPass(prop[2]);
-
-          Serial.println(pass + " - " + pass.length());
-          Serial.println(oldPass + " - " + oldPass.length());
-
-          cfg.close();
-          
-          if (pass == oldPass)
-          {
-            cfg = SPIFFS.open("/_cfg.txt", "w");
-            cfg.println(prop[0]);
-            cfg.println(prop[1]);
-
-            cfg.close();
-
-            Serial.print("<ok>");
-            if (debug)
-              Serial.println("");
-          }
-          else
-          {
-            Serial.print("<err:Invalid password>");
-            if (debug)
-              Serial.println("");
-          }
+          lock = false;
+          Serial.print("<ok>");
+          if (debug)
+            Serial.println("");
         }
         else
         {
-          cfg = SPIFFS.open("/_cfg.txt", "w");
-          cfg.println(prop[0]);
-          cfg.println(prop[1]);
-
-          cfg.close();
-
-          Serial.print("<ok>");
+          Serial.print("<err: Password incorect!>");
           if (debug)
             Serial.println("");
         }
       }
     }
-    else if (!strcmp("getConfig", com))
+    else if (!strcmp("lock", com))
     {
-      if (SPIFFS.exists("/_cfg.txt"))
-      {
-        File cfg = SPIFFS.open("/_cfg.txt", "r");
-
-        String login = cfg.readStringUntil('\n');
-        String pass = cfg.readStringUntil('\n');
-
-        cfg.close();
-
-        Serial.print("<");
-        Serial.print(login);
-        Serial.print(":");
-        Serial.print(pass);
-        Serial.print(">");
-
-        if (debug)
-          Serial.println("");
-      }
-      else
-      {
-        Serial.print("<err:No cfg file>");
-
-        if (debug)
-          Serial.println("");
-      }
+      lock = true;
+      Serial.print("<ok>");
+      if (debug)
+        Serial.println("");
     }
+
     return 1;
   }
   else

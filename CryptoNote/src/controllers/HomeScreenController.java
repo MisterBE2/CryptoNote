@@ -17,6 +17,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.image.Image;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
@@ -60,16 +61,16 @@ public class HomeScreenController {
 
 	@FXML
 	private ProgressBar progressBarMem;
-	
-    @FXML
-    void onActionRefresh() {
-    	populateNoteList();
+
+	@FXML
+	void onActionRefresh() {
+		populateNoteList();
 		populateDeviceInfo();
-		
+
 		labelTitle.setText("");
 		labelContent.setText("");
-    }
-	
+	}
+
 	@FXML
 	void onActionAddNote() {
 		showEditor(true);
@@ -83,7 +84,7 @@ public class HomeScreenController {
 					ButtonType.YES, ButtonType.NO);
 			Optional<ButtonType> result = alert.showAndWait();
 			if (result.isPresent() && result.get() == ButtonType.YES) {
-				Command c = Parser.parse(bs.sendAwaitToOpenedPort(dev, "<remove:" + labelTitle.getText() + ">", 100));
+				Command c = Parser.parse(bs.sendAwaitToOpenedPort(dev, "<remove:" + g.encodeNoteName(labelTitle.getText()) + ">", 100));
 				if (c.isValid()) {
 					if (c.getCommand().contains("err")) {
 						alert = new Alert(AlertType.WARNING, c.getProp().get(0), ButtonType.OK);
@@ -100,15 +101,14 @@ public class HomeScreenController {
 			populateDeviceInfo();
 		}
 	}
-	
-	public ProgressBoxController getProgressBox(String title)
-	{
+
+	public ProgressBoxController getProgressBox(String title) {
 		ProgressBoxController pbc = null;
 		FXMLLoader ld = g.getResLoader("ProgressBox");
 		try {
 			AnchorPane ap = ld.load();
 			pbc = ld.getController();
-			
+
 			Stage stagePB = new Stage();
 			pbc.setData("");
 			pbc.setProgress(0);
@@ -117,6 +117,7 @@ public class HomeScreenController {
 			Scene scene = new Scene(ap);
 			scene.getStylesheets().add("/resources/css/global.css");
 
+			stagePB.getIcons().add(new Image(this.getClass().getResourceAsStream("/resources/img/icon.png")));
 			stagePB.setTitle(title);
 			stagePB.setScene(scene);
 			stagePB.setResizable(false);
@@ -124,7 +125,7 @@ public class HomeScreenController {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		return pbc;
 	}
 
@@ -148,6 +149,7 @@ public class HomeScreenController {
 				nsc.setStage(stage);
 
 				Scene scene = new Scene(ap);
+				stage.getIcons().add(new Image(this.getClass().getResourceAsStream("/resources/img/icon.png")));
 				scene.getStylesheets().add("/resources/css/global.css");
 
 				stage.setTitle("Note editor");
@@ -186,21 +188,20 @@ public class HomeScreenController {
 
 			result.ifPresent(name -> {
 				Command c = Parser.parse(
-						bs.sendAwaitToOpenedPort(dev, "<rename:" + labelTitle.getText() + ":" + name + ">", 100));
+						bs.sendAwaitToOpenedPort(dev, "<rename:" + g.encodeNoteName(labelTitle.getText()) + ":" + g.encodeNoteName(name) + ">", 100));
 				if (c.isValid()) {
 					if (c.getCommand().contains("err")) {
 						Alert alert = new Alert(AlertType.ERROR, c.getProp().get(0), ButtonType.OK);
 						alert.showAndWait();
-					} else
-					{
+					} else {
 						labelTitle.setText("");
 						labelContent.setText("");
-						
-				    	populateNoteList();
+
+						populateNoteList();
 						populateDeviceInfo();
-						
+
 						System.out.println("Rename command response: " + c.getCommand());
-					}			
+					}
 				}
 			});
 		}
@@ -213,15 +214,16 @@ public class HomeScreenController {
 	}
 
 	public void openNote(String notePath) {
-		Command notes = Parser.parse(bs.sendAwaitToOpenedPort(dev, "<read:" + notePath + ">", 10000));
+		Command notes = Parser.parse(bs.sendAwaitToOpenedPort(dev, "<read:" + g.encodeNoteName(notePath) + ">", 10000));
+
 		if (notes.isValid()) {
 			if (notes.getCommand().contains("read")) {
-				labelTitle.setText(notePath);
+							
+				labelTitle.setText(g.getDescriptiveNoteName(notePath));
 
 				if (notes.getProp() != null)
-						labelContent.setText(new String(Base64.getDecoder().decode(notes.getProp().get(0))));
+					labelContent.setText(new String(Base64.getDecoder().decode(notes.getProp().get(0))));
 
-				
 				else
 					labelContent.setText("");
 			} else if (notes.getCommand().contains("err")) {
@@ -287,8 +289,13 @@ public class HomeScreenController {
 		VBoxTitles.getChildren().clear();
 
 		Command notes = Parser.parse(bs.sendAwaitToOpenedPort(dev, "<list>", 200));
+		
 		if (notes.isValid()) {
-			if (notes.getCommand().contains("list")) {
+			if (notes.getCommand().contains("err")) {
+				Alert alert = new Alert(AlertType.ERROR, notes.getProp().get(0), ButtonType.OK);
+				alert.showAndWait();
+			}
+			else if (notes.getCommand().contains("list")) {
 				if (notes.getProp() != null) {
 					for (String note : notes.getProp()) {
 						FXMLLoader ld = g.getResLoader("TitleNode");
@@ -297,7 +304,8 @@ public class HomeScreenController {
 							newB = ld.load();
 
 							TitleNodeController tnc = ld.getController();
-							tnc.setName(note);
+
+							tnc.setName(g.getDescriptiveNoteName(note));
 							tnc.setHSC(this);
 
 							VBoxTitles.getChildren().add(newB);
