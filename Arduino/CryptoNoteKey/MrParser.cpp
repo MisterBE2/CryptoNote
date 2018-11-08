@@ -169,11 +169,14 @@ int mrParse(const char* comBuffer)
         {
           ledSet(0, 0, 255);
           Serial.print("<read:");
-          while (f.available())
-          {
-            Serial.print((char)f.read());
-            delayMicroseconds(100);
-          }
+
+          Serial.print(f.readStringUntil('\0'));
+          
+//          while (f.available())
+//          {
+//            Serial.print((char)f.read());
+//            delayMicroseconds(100);
+//          }
           Serial.print(">");
           if (debug)
             Serial.println("");
