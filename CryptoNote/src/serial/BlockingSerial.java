@@ -37,8 +37,6 @@ public class BlockingSerial {
 				buffer += new String(readBuffer);
 
 				if ((buffer.contains("<") && buffer.contains(">"))) {
-					System.out.println(
-							"========================= TRead comoplete: " + buffer + " in " + watch.time() + "ms");
 					watch = null;
 					comPort.getInputStream().reset();
 					doMainLoop = false;
@@ -48,12 +46,12 @@ public class BlockingSerial {
 				watch = TimeWatch.start();
 			}
 		} catch (Exception e) {
-			System.out.println("Couldn't send / recive to/from device");
+
 		}
 
 		if (watch != null)
 			System.out.println(
-					"========================= TRead incomplete: " + buffer + " timeout =  " + watch.time() + "ms");
+					"========================= Timeout =  " + watch.time() + "ms, len = " + buffer.length() + ", TRead = " + buffer);
 		watch = null;
 		comPort.closePort();
 		return buffer;
@@ -91,8 +89,6 @@ public class BlockingSerial {
 
 				if ((buffer.contains("<") && buffer.contains(">"))) {
 					doMainLoop = false;
-					System.out.println(
-							"========================= TRead comoplete: " + buffer + " in " + watch.time() + "ms");
 					comPort.getInputStream().reset();
 					watch = null;
 					return buffer;
@@ -101,11 +97,11 @@ public class BlockingSerial {
 				watch = TimeWatch.start();
 			}
 		} catch (Exception e) {
-			System.out.println("Couldn't send / recive to/from device");
+
 		}
 
 		System.out.println(
-				"========================= TRead incomplete: " + buffer + " timeout =  " + watch.time() + "ms");
+				"========================= Timeout =  " + watch.time() + "ms, len = " + buffer.length() + ", TRead = " + buffer);
 		watch = null;
 		return buffer;
 	}

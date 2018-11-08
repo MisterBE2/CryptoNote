@@ -2,6 +2,7 @@ package controllers;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.Base64;
 import java.util.Optional;
 
 import com.fazecast.jSerialComm.SerialPort;
@@ -24,6 +25,7 @@ import mrParser.Command;
 import mrParser.Parser;
 import serial.BlockingSerial;
 import serial.SerialConnection;
+import tools.Cryptor;
 
 public class HomeScreenController {
 
@@ -217,7 +219,9 @@ public class HomeScreenController {
 				labelTitle.setText(notePath);
 
 				if (notes.getProp() != null)
-					labelContent.setText(notes.getProp().get(0));
+						labelContent.setText(new String(Base64.getDecoder().decode(notes.getProp().get(0))));
+
+				
 				else
 					labelContent.setText("");
 			} else if (notes.getCommand().contains("err")) {

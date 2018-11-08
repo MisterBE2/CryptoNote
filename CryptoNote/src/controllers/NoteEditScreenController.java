@@ -1,6 +1,7 @@
 package controllers;
 
 import java.util.Arrays;
+import java.util.Base64;
 
 import com.fazecast.jSerialComm.SerialPort;
 
@@ -15,6 +16,7 @@ import mrParser.Command;
 import mrParser.Parser;
 import serial.BlockingSerial;
 import serial.SerialConnection;
+import tools.Cryptor;
 
 public class NoteEditScreenController {
 
@@ -22,7 +24,7 @@ public class NoteEditScreenController {
 	private Stage thisStage;
 	private BlockingSerial bs = new BlockingSerial();
 	private int devBufferSize = 0;
-	private boolean newNode = false;
+	private boolean newNode = true;
 	private SerialPort dev;
 
 	@FXML
@@ -43,6 +45,10 @@ public class NoteEditScreenController {
 		{
 			textFieldTitle.setEditable(false);
 		}
+		else
+		{
+			textFieldTitle.setEditable(true);
+		}
 	}
 
 	@FXML
@@ -58,6 +64,13 @@ public class NoteEditScreenController {
 			content = content.replace(":", ";");
 			content = content.replace("<", "{");
 			content = content.replace(">", "}");
+//			
+//			try {
+//				content = Cryptor.encrypt(content, "1234");
+//			} catch (Exception e) {
+//				// TODO: handle exception
+//			}
+//					
 
 			if (note.contains("/") && note.contains(".txt") && note.length() > 5) {
 				Command c = Parser.parse(bs.sendAwaitToOpenedPort(dev, "<open:" + note + ":w>", 100));
@@ -72,29 +85,53 @@ public class NoteEditScreenController {
 				
 				c = Parser.parse(bs.sendAwaitToOpenedPort(dev, "<open:" + note + ":a>", 100));
 				
-				int chunk = 100; // chunk size to divide
-				for(int i=0;i<content.length();i+=chunk){
-					char tempBuff[] = Arrays.copyOfRange(content.toCharArray(), i, Math.min(content.length(),i+chunk));
-					String out = new String(tempBuff);
-				    
-				    c = Parser.parse(bs.sendAwaitToOpenedPort(dev, "<append:" + out + ">", devBufferSize*5));
+				byte[] bytesEncoded = Base64.getEncoder().encode(content.getBytes());
+				content = new String(bytesEncoded);
+				
+				for (char ot : content.toCharArray()) {
+					 c = Parser.parse(bs.sendAwaitToOpenedPort(dev, "<a:" + ot + ">", 200));
 
-					while (!c.is("ok") && curRetry <= maxRetry) {
-						try {
-							Thread.sleep(500);
-						} catch (Exception e) {
-							// TODO: handle exception
+						while (!c.is("ok") && curRetry <= maxRetry) {
+							try {
+								Thread.sleep(100);
+							} catch (Exception e) {
+								// TODO: handle exception
+							}
+							System.out.println("Append error, retrying");
+							c = Parser.parse(bs.sendAwaitToOpenedPort(dev, "<a:" + ot + ">", 200));
+							curRetry++;
 						}
-						System.out.println("Append error, retrying");
-						c = Parser.parse(bs.sendAwaitToOpenedPort(dev, "<append:" + out + ">", devBufferSize*5));
-						curRetry++;
-					}
 
-					if (curRetry >= maxRetry)
-						break;
+						if (curRetry >= maxRetry)
+							break;
 
-					curRetry = 0;
-				}  
+						curRetry = 0;
+				}
+				
+				
+//				int chunk = bufMaxSize; // chunk size to divide
+//				for(int i=0;i<content.length();i+=chunk){
+//					char tempBuff[] = Arrays.copyOfRange(content.toCharArray(), i, Math.min(content.length(),i+chunk));
+//					String out = new String(tempBuff);
+//				    
+//				    c = Parser.parse(bs.sendAwaitToOpenedPort(dev, "<append:" + out + ">", devBufferSize*5));
+//
+//					while (!c.is("ok") && curRetry <= maxRetry) {
+//						try {
+//							Thread.sleep(500);
+//						} catch (Exception e) {
+//							// TODO: handle exception
+//						}
+//						System.out.println("Append error, retrying");
+//						c = Parser.parse(bs.sendAwaitToOpenedPort(dev, "<append:" + out + ">", devBufferSize*5));
+//						curRetry++;
+//					}
+//
+//					if (curRetry >= maxRetry)
+//						break;
+//
+//					curRetry = 0;
+//				}  
 
 				if (curRetry >= maxRetry)
 					System.out.println(" ####### Error while saving message! #######");

@@ -220,7 +220,7 @@ int mrParse(const char* comBuffer)
           Serial.println("");
       }
     }
-    else if (!strcmp("append", com))
+    else if (!strcmp("a", com))
     {
       if (propCount == 1)
       {
@@ -240,7 +240,6 @@ int mrParse(const char* comBuffer)
           for (int i = 0; i < strlen(prop[0]); i++)
           {
             curF.write((uint8_t)prop[0][i]);
-            delay(5);
           }
 
           Serial.print("<ok>");
@@ -332,7 +331,86 @@ int mrParse(const char* comBuffer)
           Serial.println("");
       }
     }
+    else if (!strcmp("setConfig", com))
+    {
+      if (propCount == 3)
+      {
+        File cfg;
 
+        if (SPIFFS.exists("/_cfg.txt"))
+        {
+          cfg = SPIFFS.open("/_cfg.txt", "r");
+
+          String login = cfg.readStringUntil('\n');
+          String pass = cfg.readStringUntil('\n');
+          String oldPass(prop[2]);
+
+          Serial.println(pass + " - " + pass.length());
+          Serial.println(oldPass + " - " + oldPass.length());
+
+          cfg.close();
+          
+          if (pass == oldPass)
+          {
+            cfg = SPIFFS.open("/_cfg.txt", "w");
+            cfg.println(prop[0]);
+            cfg.println(prop[1]);
+
+            cfg.close();
+
+            Serial.print("<ok>");
+            if (debug)
+              Serial.println("");
+          }
+          else
+          {
+            Serial.print("<err:Invalid password>");
+            if (debug)
+              Serial.println("");
+          }
+        }
+        else
+        {
+          cfg = SPIFFS.open("/_cfg.txt", "w");
+          cfg.println(prop[0]);
+          cfg.println(prop[1]);
+
+          cfg.close();
+
+          Serial.print("<ok>");
+          if (debug)
+            Serial.println("");
+        }
+      }
+    }
+    else if (!strcmp("getConfig", com))
+    {
+      if (SPIFFS.exists("/_cfg.txt"))
+      {
+        File cfg = SPIFFS.open("/_cfg.txt", "r");
+
+        String login = cfg.readStringUntil('\n');
+        String pass = cfg.readStringUntil('\n');
+
+        cfg.close();
+
+        Serial.print("<");
+        Serial.print(login);
+        Serial.print(":");
+        Serial.print(pass);
+        Serial.print(">");
+
+        if (debug)
+          Serial.println("");
+      }
+      else
+      {
+        Serial.print("<err:No cfg file>");
+
+        if (debug)
+          Serial.println("");
+      }
+    }
     return 1;
   }
   else
